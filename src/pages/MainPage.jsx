@@ -25,7 +25,7 @@ export default function MainPage() {
   const {isLoading,error,data}=useQuery({
     queryKey:['fetchData'],
     queryFn: ()=>
-        fetch('https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20').then((res)=>res.json()),
+        fetch('https://pokeapi.co/api/v2/pokemon/?offset=20&limit=40').then((res)=>res.json()),
         staleTime: 10 * (60 * 1000),
        
 
