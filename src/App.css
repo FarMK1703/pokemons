@@ -3,11 +3,7 @@
   box-sizing: border-box;
 }
 
-html,body{
-  width: 100%;
-  height: 100%;
- 
-}
+
 
 
 body{
@@ -218,6 +214,16 @@ h2{
 .pokemonFullView ul{
   width: 80%;
 }
+
+
+.btn{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+
 
 
 

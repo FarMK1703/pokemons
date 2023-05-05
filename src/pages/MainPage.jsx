@@ -3,7 +3,8 @@ import { useQuery} from '@tanstack/react-query'
 import PokemonInfo from '../components/PokemonInfo'
 import Loader from '../components/Loader'
 import { useNavigate } from 'react-router-dom'
-
+import { useInfiniteQuery } from '@tanstack/react-query'
+import axios from 'axios'
 
 
 
@@ -11,52 +12,71 @@ import { useNavigate } from 'react-router-dom'
 
 
 export default function MainPage() {
-  const navigate=useNavigate()
+    const navigate = useNavigate();
   
   
 
-
-  
-
-
-  
-
-
-  const {isLoading,error,data}=useQuery({
-    queryKey:['fetchData'],
-    queryFn: ()=>
-        fetch('https://pokeapi.co/api/v2/pokemon/?offset=20&limit=40').then((res)=>res.json()),
-        staleTime: 10 * (60 * 1000),
+    const {
+      status,
+      data,
+      error,
+      isFetching,
+      isFetchingNextPage,
+      isFetchingPreviousPage,
+      fetchNextPage,
+      fetchPreviousPage,
+      hasNextPage,
+      hasPreviousPage,
+    } = useInfiniteQuery(
+      ['pokemons'],
+      async ({pageParam=0}) => {
+        const res = await axios.get(`https://pokeapi.co/api/v2/pokemon?limit=20&offset=${pageParam}`)
+        return res.data
+      },
+      
+      {
        
+        getNextPageParam: (_lastPage, pages) => {
+          console.log(pages.length)
+          return pages.length+1
+        },
+      },
+    )
 
-  })
+    
 
-
-
+    if(status==='success'){
+      return (
+        <>
+          <div className='Example'>
+             {data.pages.map((page,index)=>{
+               return <React.Fragment key={index}>
+                          {page.results.map(pokemon=>{
+                           return <div 
+                           className='pokemonCard' 
+                           onClick={()=>{navigate(`/pokemon-page/${pokemon.name}`)}}
+                           key={pokemon.name}>
+                          <h1> {pokemon.name}</h1>
+                          <PokemonInfo 
+                         
+                          url={pokemon.url}/>
+                           </div>
+                          })}
+               </React.Fragment>
+             })}
  
-
-
-
-  if(isLoading) return <Loader/>
-
-  if (error) return <div>{error.message}</div>
-
-  return (
-    <div className='Example'>
-       
-           {data.results.map((item,index)=>{
-            return <div  key={index}
-                         onClick={()=>{navigate(`/pokemon-page/${item.name}`)}}
-                         className='pokemonCard'>
-
-
-                   <h1>{item.name}</h1>
-                   <PokemonInfo url={item.url}/>
-                   
-            </div>
-           })}
-        
-       
-    </div>
-  )
+ 
+                 
+         </div>
+ 
+         <div className='btn'>
+           <button 
+           disabled={isFetching}
+           onClick={fetchNextPage}>{isFetching? 'Загрузка': 'Загрузить еще'}</button>
+         </div>
+        </>
+ 
+         
+     );
+    }
 }
