@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useQuery} from '@tanstack/react-query'
 import PokemonInfo from '../components/PokemonInfo'
 import Loader from '../components/Loader'
@@ -13,6 +13,7 @@ import axios from 'axios'
 
 export default function MainPage() {
     const navigate = useNavigate();
+    const [offfset, setOffset]=useState(20)
   
   
 
@@ -29,17 +30,23 @@ export default function MainPage() {
       hasPreviousPage,
     } = useInfiniteQuery(
       ['pokemons'],
-      async ({pageParam=0}) => {
+      async ({pageParam=1}) => {
         const res = await axios.get(`https://pokeapi.co/api/v2/pokemon?limit=20&offset=${pageParam}`)
-        return res.data
+        return {data:res.data, pageParam:pageParam+20}
       },
       
       {
        
-        getNextPageParam: (_lastPage, pages) => {
-          console.log(pages.length)
-          return pages.length+1
-        },
+      getNextPageParam: (_lastPage, pages) => {
+        
+        const maxPages=pages[0].count
+        const nextPageParam=_lastPage.pageParam+20
+       
+        
+        console.log(nextPageParam)
+
+        return  nextPageParam
+      }
       },
     )
 
@@ -51,7 +58,7 @@ export default function MainPage() {
           <div className='Example'>
              {data.pages.map((page,index)=>{
                return <React.Fragment key={index}>
-                          {page.results.map(pokemon=>{
+                          {page.data.results.map(pokemon=>{
                            return <div 
                            className='pokemonCard' 
                            onClick={()=>{navigate(`/pokemon-page/${pokemon.name}`)}}
