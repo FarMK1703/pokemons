@@ -20,7 +20,7 @@ export default function PokemonFullView() {
 
 
   return (
-   <div className='wrapper'>
+   <div className='pokemonFullViewWrapper'>
      <div className='pokemonFullView'>
         <h1>{pokemon.name}</h1>
         <div className='image'

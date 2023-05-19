@@ -13,7 +13,6 @@ import axios from 'axios'
 
 export default function MainPage() {
     const navigate = useNavigate();
-    const [offfset, setOffset]=useState(20)
   
   
 
@@ -32,7 +31,7 @@ export default function MainPage() {
       ['pokemons'],
       async ({pageParam=1}) => {
         const res = await axios.get(`https://pokeapi.co/api/v2/pokemon?limit=20&offset=${pageParam}`)
-        return {data:res.data, pageParam:pageParam+20}
+        return {data:res.data, pageParam:pageParam}
       },
       
       {
